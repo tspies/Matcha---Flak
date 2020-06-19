@@ -1,4 +1,4 @@
-from matcha              import db
+from matcha             import db
 from datetime           import datetime
 from sqlalchemy_utils   import ChoiceType
 
@@ -43,4 +43,4 @@ class User(db.Model):
     # def __init__(self, username):
     #     self.username   = username
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return f'<User {self.username}> <{self.email}>'
