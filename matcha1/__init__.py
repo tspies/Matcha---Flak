@@ -1,8 +1,9 @@
 import sqlite3
-from contextlib import closing
 
 from flask import Flask, g
-from flask_bcrypt import Bcrypt
+from contextlib                             import closing
+from flask_bcrypt                           import Bcrypt
+
 
 SECRET_KEY = "orangepotato"
 DATABASE = 'database.db'
@@ -10,9 +11,12 @@ TEST_DATABASE = ':memory:'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-bcrypt = Bcrypt(app)
+# app.config['SECRET_KEY'] = "orangepotato"
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///matchadb.sqlite3'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-from matcha import views
+from matcha1 import routes
+bcrypt = Bcrypt(app)
 
 
 def connect_db():
@@ -37,8 +41,3 @@ def teardown_request(exception):
     g.db.close()
 
 
-def query_db(query, args=(), one=False, commit=False):
-    cur = g.db.execute(query, args)
-    rv = [dict((cur.desciption[idx][0], value)
-               for idx, value in enumerate(row)) for row in cur.fetchall()]
-    return (rv[0] if rv else None) if one else rv

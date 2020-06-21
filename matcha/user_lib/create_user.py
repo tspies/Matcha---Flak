@@ -1,17 +1,17 @@
-from matcha.models import User
-from sqlalchemy     import or_
-from matcha         import db
+from flask import g
+from matcha import bcrypt
 
 
-def create_user(form, hashed_password):
+def query_db(query, args=(), one=False):
+    cur = g.db.execute(query, args)
+    rv = [dict((cur.description[idx][0], value)
+               for idx, value in enumerate(row)) for row in cur.fetchall()]
+    return (rv[0] if rv else None) if one else rv
 
-    new_user = False
 
-    user_check = False
-
-    if not user_check:
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        new_user = True
-    return new_user
+def user_lib_create_user(form):
+    hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+    print(form.password.data)
+    print(hashed_password)
+    user = query_db("INSERT INTO users (username, email, password) VALUES (?,?,?)", (form.username.data, form.email.data, hashed_password))
+    g.db.commit()
