@@ -1,8 +1,8 @@
 import re
-from flask              import flash, g, session
+from flask              import flash, g, session, current_app
 from matcha             import mail
-from matcha             import bcrypt
 from flask_mail         import Message
+from itsdangerous       import URLSafeTimedSerializer
 
 
 def query_db(query, args=(), one=False):
@@ -67,14 +67,15 @@ def valid_password(password):
 def set_session_values(form):
 
     session['username'] = form.username.data
-    session['logged_in'] = True
+    # session['logged_in'] = True
 
 
 def validate_lib_send_verification_email(form):
 
-    link = bcrypt.generate_password_hash(form.username.data).decode('utf-8')
+    serialize = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    token = serialize.dumps(form.username.data, salt='email-confirm-salt')
 
     message = Message(subject="Matcha Verification",
-                      body=f"Thanks for signing up, please click on the following link to complete your registration: http://127.0.0.1:5000/verification/{form.username.data}/{link}",
+                      body=f"Thanks for signing up, please click on the following link to complete your registration: http://127.0.0.1:5000/verification/{token}",
                       recipients=["tspies.game@gmail.com"])
     mail.send(message)

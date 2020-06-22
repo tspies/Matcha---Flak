@@ -56,7 +56,8 @@ def signup():
                     validate_lib_send_verification_email(form)
                     user_lib_create_user(form)
                     flash("You have Signed up!", 'success')
-                    return redirect(url_for('home'))
+                    print(form.email.data)
+                    return redirect(url_for('unverified'))
             return render_template('signup.html', form=form)
         else:
             return redirect(url_for('home'))
@@ -75,17 +76,15 @@ def home():
     return redirect(url_for('splash'))
 
 
-@app.route('/not_verified/<token>')
-def unverified(token):
+@app.route('/not_verified/')
+def unverified():
+    return render_template("unverified.html")
 
-    return render_template("unverified.html", token=token)
 
-
-@app.route('/verification/<email>/<token>')
-def verification(email, token):
-    print(email)
+@app.route('/verification/<token>')
+def verification( token):
     print(token)
-    return validate_lib_email_verification(email, token)
+    return validate_lib_email_verification(token)
 
 
 @app.route('/profile_update')
