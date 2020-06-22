@@ -1,11 +1,14 @@
 import sqlite3
 
-from flask import render_template, g, request, flash
+from flask                                      import render_template, g, request, flash, session, redirect, url_for
 
-from matcha import app
-from matcha.forms import LoginForm, SignupForm
-from matcha.user_lib.create_user import user_lib_create_user
-from matcha.validate_lib.signup import validate_lib_signup_form
+from matcha                                     import app
+from matcha.forms                               import LoginForm, SignupForm
+from matcha.validate_lib.email import validate_lib_email_verification
+from matcha.validate_lib.login                  import validate_lib_login_form
+from matcha.validate_lib.logout import validate_lib_logout_user
+from matcha.validate_lib.signup                 import validate_lib_signup_form, validate_lib_send_verification_email
+from matcha.user_lib.create_user                import user_lib_create_user
 
 
 def get_db():
@@ -24,41 +27,67 @@ def query_db(query, args=(), one=False):
 
 @app.route("/")
 def splash():
+    if 'logged_in ' in session:
+        if session['logged_in']:
+            return redirect(url_for('home'))
+    session['logged_in'] = False
     return render_template("splash.html")
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('home'))
-    form = LoginForm()
-    user = query_db("SELECT * FROM users")
-    print(user)
-    # if form.validate_on_submit():
-    #     user = check_exits_user_lib(form)
-    #     if user:
-    #         login_user(user, remember=form.remember.data)
-    #         flash(f'You are logged in, welcome {user.username}', 'success')
-    #         return redirect(url_for('home'))
-    return render_template("login.html", form=form)
+    print(session['logged_in'])
+    if not session['logged_in']:
+        form = LoginForm()
+        if request.method == "POST":
+            return validate_lib_login_form(form)
+        else:
+            return render_template("login.html", form=form)
+    return redirect(url_for('home'))
 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('home'))
-    users = query_db("SELECT * FROM users")
-    for user in users:
-        print(user)
     form = SignupForm()
-    if request.method == "POST":
-        if validate_lib_signup_form(form):
-            user_lib_create_user(form)
-            flash("Signed In!", 'success')
-    # if form.validate_on_submit():
-    #     hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-    #     if create_user_lib(form, hashed_password):
-    #         flash(f'Account created for {form.email.data}', 'success')
-    #         return redirect(url_for('login'))
-
+    if 'logged_in' in session:
+        if not session['logged_in']:
+            if request.method == "POST":
+                if validate_lib_signup_form(form):
+                    validate_lib_send_verification_email(form)
+                    user_lib_create_user(form)
+                    flash("You have Signed up!", 'success')
+                    return redirect(url_for('home'))
+            return render_template('signup.html', form=form)
+        else:
+            return redirect(url_for('home'))
     return render_template('signup.html', form=form)
+
+
+@app.route("/logout")
+def logout():
+    return validate_lib_logout_user()
+
+
+@app.route('/home')
+def home():
+    if session.get('logged_in'):
+        return render_template("home.html")
+    return redirect(url_for('splash'))
+
+
+@app.route('/not_verified/<token>')
+def unverified(token):
+
+    return render_template("unverified.html", token=token)
+
+
+@app.route('/verification/<email>/<token>')
+def verification(email, token):
+    print(email)
+    print(token)
+    return validate_lib_email_verification(email, token)
+
+
+@app.route('/profile_update')
+def profile_update():
+    return render_template("profile_update.html")

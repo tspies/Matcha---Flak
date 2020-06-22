@@ -1,8 +1,17 @@
 import sqlite3
-from contextlib import closing
+from contextlib             import closing
 
-from flask import Flask, g
-from flask_bcrypt import Bcrypt
+from flask                  import Flask, g
+from flask_bcrypt           import Bcrypt
+from flask_mail             import Mail
+
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_DEFAULT_SENDER = 'noreply@matcha.com'
+MAIL_USERNAME = 'matchadatingxxx@gmail.com'
+MAIL_PASSWORD = 'q1w2e3r4t5!'
+MAIL_PORT = 465
+MAIL_USE_TSL  = False
+MAIL_USE_SSL = True
 
 SECRET_KEY = "orangepotato"
 DATABASE = 'database.db'
@@ -11,6 +20,7 @@ TEST_DATABASE = ':memory:'
 app = Flask(__name__)
 app.config.from_object(__name__)
 bcrypt = Bcrypt(app)
+mail = Mail(app)
 
 from matcha import views
 

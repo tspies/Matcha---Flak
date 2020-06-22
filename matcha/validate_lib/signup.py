@@ -1,5 +1,8 @@
 import re
-from flask import flash, g
+from flask              import flash, g, session
+from matcha             import mail
+from matcha             import bcrypt
+from flask_mail         import Message
 
 
 def query_db(query, args=(), one=False):
@@ -33,6 +36,8 @@ def validate_lib_signup_form(form):
         flash("Password and Confirm password do not match", 'danger')
         return False
 
+    if valid:
+        set_session_values(form)
     return valid
 
 
@@ -42,26 +47,34 @@ def valid_password(password):
 
     while 1:
         if len(password) < 6 or len(password) > 15:
-            print("Broke on len")
             break
         elif not re.search("[a-z]", password):
-            print("Broke on az")
             break
         elif not re.search("[0-9]", password):
-            print("Broke on 09")
             break
         elif not re.search("[A-Z]", password):
-            print("Broke on AZ")
             break
         elif not re.search("[!@#$%^&*()]", password):
-            print("Broke on !@#")
             break
         elif re.search("\s", password):
-            print("Broke on space")
             break
         else:
             valid = True
             break
-    print(valid)
     return valid
 
+
+def set_session_values(form):
+
+    session['username'] = form.username.data
+    session['logged_in'] = True
+
+
+def validate_lib_send_verification_email(form):
+
+    link = bcrypt.generate_password_hash(form.username.data).decode('utf-8')
+
+    message = Message(subject="Matcha Verification",
+                      body=f"Thanks for signing up, please click on the following link to complete your registration: http://127.0.0.1:5000/verification/{form.username.data}/{link}",
+                      recipients=["tspies.game@gmail.com"])
+    mail.send(message)

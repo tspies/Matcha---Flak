@@ -1,5 +1,5 @@
-from flask import g
-from matcha import bcrypt
+from flask                          import g
+from matcha                         import bcrypt
 
 
 def query_db(query, args=(), one=False):
@@ -11,7 +11,6 @@ def query_db(query, args=(), one=False):
 
 def user_lib_create_user(form):
     hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-    print(form.password.data)
-    print(hashed_password)
-    user = query_db("INSERT INTO users (username, email, password) VALUES (?,?,?)", (form.username.data, form.email.data, hashed_password))
+    user = query_db("INSERT INTO users (username, email, password, verified) VALUES (?,?,?,?)",
+                    (form.username.data, form.email.data, hashed_password, False,))
     g.db.commit()

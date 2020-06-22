@@ -19,7 +19,7 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                     </li>
-                   {% if current_user.is_authenticated %}
+                   {% if session['logged_in'] %}
                        <li class="nav-item"> <a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                    {% endif %}
                 </ul>
@@ -37,4 +37,4 @@
             </div>
      </nav>
 {% endblock %}
-{% block content %}<h2>Welcome to Matcha - {{ current_user.username }}</h2>{% endblock %}
+{% block content %}<h2>Welcome to Matcha - {{ session['username'] }}</h2>{% endblock %}
