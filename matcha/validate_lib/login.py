@@ -1,5 +1,7 @@
-from flask import g, flash, redirect, url_for, request, render_template, session
-from matcha import bcrypt
+import re
+
+from flask import g, flash, redirect, url_for, request, render_template, session, current_app
+from matcha         import bcrypt
 
 
 def query_db(query, args=(), one=False):

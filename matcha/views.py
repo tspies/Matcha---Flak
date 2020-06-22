@@ -3,8 +3,9 @@ import sqlite3
 from flask                                      import render_template, g, request, flash, session, redirect, url_for
 
 from matcha                                     import app
-from matcha.forms                               import LoginForm, SignupForm
-from matcha.validate_lib.email import validate_lib_email_verification
+from matcha.forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
+from matcha.validate_lib.email import validate_lib_email_verification, validate_lib_forgot_password, \
+    validate_lib_reset_password
 from matcha.validate_lib.login                  import validate_lib_login_form
 from matcha.validate_lib.logout import validate_lib_logout_user
 from matcha.validate_lib.signup                 import validate_lib_signup_form, validate_lib_send_verification_email
@@ -55,9 +56,8 @@ def signup():
                 if validate_lib_signup_form(form):
                     validate_lib_send_verification_email(form)
                     user_lib_create_user(form)
-                    flash("You have Signed up!", 'success')
-                    print(form.email.data)
-                    return redirect(url_for('unverified'))
+                    flash("You have Signed up, please click the link in the email we have sent you to verify your account.", 'success')
+                    return redirect(url_for('login'))
             return render_template('signup.html', form=form)
         else:
             return redirect(url_for('home'))
@@ -76,7 +76,23 @@ def home():
     return redirect(url_for('splash'))
 
 
-@app.route('/not_verified/')
+@app.route('/forgot password', methods=['GET', 'POST'])
+def forgot_password():
+    form = ForgotPasswordForm()
+    if request.method == "POST":
+        return validate_lib_forgot_password(form)
+    return render_template('forgot_password.html', form=form)
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    form = ResetPasswordForm()
+    if request.method == "POST":
+        return validate_lib_reset_password(form, token)
+    return render_template("reset_password.html", form=form, token=token)
+
+
+@app.route('/not_verified')
 def unverified():
     return render_template("unverified.html")
 
