@@ -78,7 +78,7 @@ def home():
     return redirect(url_for('splash'))
 
 
-@app.route('/forgot password', methods=['GET', 'POST'])
+@app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     form = ForgotPasswordForm()
     if request.method == "POST":

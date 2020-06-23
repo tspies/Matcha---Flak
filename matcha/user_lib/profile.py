@@ -17,26 +17,28 @@ def query_db(query, args=(), one=False):
 def user_lib_validate_profile_update_form(form, user):
     new_username = False
     new_email = False
+    form.likes.data = user['likes']
+    form.matches.data = user['matches']
+    form.fame.data = user['fame']
+
     if not form.username.data == user['username']:
         new_username = True
-        username = query_db("SELECT * FROM users WHERE username = ?", (form.username.data,))
+        username = query_db("SELECT * FROM users WHERE username = ?", (form.username.data,), True)
         if username:
             flash("That username is already in use, please choose another one.", 'danger')
             return render_template("profile_update.html",  form=form, user=user)
-    print("------")
-    print(form.likes.data)
-    print("------")
-    print(form.matches.data)
+
     if not form.email.data == user['email']:
         new_email = True
         if re.search("@", form.email.data):
-            email = query_db("SELECT * FROM users WHERE email = ?", (form.email.data,))
+            email = query_db("SELECT * FROM users WHERE email = ?", (form.email.data,), True)
             if email:
                 flash("That email is already in in use, plese choose another one.", 'danger')
                 return render_template("profile_update.html",  form=form, user=user)
         else:
             flash("Please us a valid email address, with a '@' symbol.", 'danger')
             return render_template("profile_update.html", form=form, user=user)
+
     if new_username and new_email:
         query_db("UPDATE users SET username=?, email=?, gender=?, sex_orientation=? WHERE username=?", (form.username.data, form.email.data, form.gender.data, form.sex_orientation.data, user['username']))
         g.db.commit()
@@ -56,16 +58,13 @@ def user_lib_validate_profile_update_form(form, user):
         query_db("UPDATE users SET email=?, gender=?, sex_orientation=? WHERE username=?", (form.email.data, form.gender.data, form.sex_orientation.data, session['username']))
         g.db.commit()
         flash("Email updated, please click the link in the verification email we sent you to re-verify your account.", 'success')
-        pop_session_values(form)
+        pop_session_values()
         send_verification_email(form)
         return redirect(url_for('login'))
 
     query_db("UPDATE users SET gender=?, sex_orientation=? WHERE username=?",
              (form.gender.data, form.sex_orientation.data, session['username']))
     g.db.commit()
-    form.likes.data     = user['likes']
-    form.matches.data   = user['matches']
-    form.fame.data      = user['fame']
     return render_template("profile_update.html",  form=form, user=user)
 
 
@@ -87,7 +86,7 @@ def set_session_values(form):
     session['username'] = form.username.data
 
 
-def pop_session_values(form):
+def pop_session_values():
 
     session.pop('username')
     session.pop('logged_in')

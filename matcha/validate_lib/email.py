@@ -1,6 +1,6 @@
 import re
 
-from flask              import g, flash, redirect, url_for, render_template, current_app, request
+from flask import g, flash, redirect, url_for, render_template, current_app, request, session
 from matcha             import bcrypt
 from flask_mail         import Message
 from itsdangerous       import URLSafeTimedSerializer
@@ -59,6 +59,10 @@ def validate_lib_forgot_password(form):
                           recipients=["tspies.game@gmail.com"])
         mail.send(message)
         flash("We have sent you a link to reset your password, please click on it to reset your password.", 'success')
+        if 'logged_in' in session:
+            session.pop('logged_in')
+        if 'username' in session:
+            session.pop('username')
         return redirect(url_for('login'))
 
 
@@ -76,21 +80,26 @@ def check_valid_email(email):
 
 def validate_lib_reset_password(form, token):
     decoded_token = decode_token(token)
-    if decoded_token and decoded_token == form.email.data:
-        if not check_valid_email(form.email.data):
-            return render_template("reset_password.html", form=form)
-        if not valid_password(form.password.data):
-            flash(
-                "Password is Invlaid please use a password between 6 and 15 character with at least one number, special character, one uppler case letter and on lower case letter with no spaces",
-                'danger')
-            return render_template("reset_password.html", form=form)
-        if not form.password.data == form.pswd_confirm.data:
-            flash("Password and Confirm password do not match", 'danger')
-            return render_template("reset_password.html", form=form)
-        set_new_password(form)
-        return redirect(url_for('login'))
-    flash("There seems to be a problem with your token, please try again.", 'danger')
-    return render_template("reset_password.html", form=form)
+    if decoded_token:
+        if decoded_token == form.email.data:
+
+            if not check_valid_email(form.email.data):
+                return render_template("reset_password.html", form=form, token=tokn)
+            if not valid_password(form.password.data):
+                flash(
+                    "Password is Invlaid please use a password between 6 and 15 character with at least one number, special character, one uppler case letter and on lower case letter with no spaces",
+                    'danger')
+                return render_template("reset_password.html", form=form, token=token)
+            if not form.password.data == form.pswd_confirm.data:
+                flash("Password and Confirm password do not match", 'danger')
+                return render_template("reset_password.html", form=form, token=token)
+            set_new_password(form)
+            return redirect(url_for('login'))
+        else:
+            flash('The entered email is incorrect', 'danger')
+    else:
+        flash("There seems to be a problem with your token, please try again.", 'danger')
+    return render_template("reset_password.html", form=form, token=token)
 
 
 def valid_password(password):
