@@ -62,8 +62,8 @@ def user_lib_validate_profile_update_form(form, user):
         send_verification_email(form)
         return redirect(url_for('login'))
 
-    query_db("UPDATE users SET gender=?, sex_orientation=? WHERE username=?",
-             (form.gender.data, form.sex_orientation.data, session['username']))
+    query_db("UPDATE users SET gender=?, sex_orientation=?, bio=? WHERE username=?",
+             (form.gender.data, form.sex_orientation.data, form.bio.data, session['username']))
     g.db.commit()
     return render_template("profile_update.html",  form=form, user=user)
 

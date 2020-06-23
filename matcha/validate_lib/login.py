@@ -19,6 +19,8 @@ def validate_lib_login_form(form):
         if check_password:
             if user['verified']:
                 set_session_values(user)
+                query_db("UPDATE users SET last_online=? WHERE username=?", ("Online", user['username']))
+                g.db.commit()
                 flash(f"Welcome {user['username']}, you are logged in!", 'success')
             else:
                 flash('You have not yet verified your email, please verify to continue', 'danger')

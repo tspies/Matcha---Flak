@@ -71,10 +71,8 @@ def logout():
 @app.route('/home')
 def home():
     if session.get('logged_in'):
-        users = query_db("SELECT * FROM users")
-        for user in users:
-            print(user)
-        return render_template("home.html")
+        users = query_db("SELECT * FROM users WHERE NOT username=?", (session['username'],))
+        return render_template("home.html", users=users)
     return redirect(url_for('splash'))
 
 
@@ -120,3 +118,13 @@ def profile_update():
 
             return render_template("profile_update.html", form=form, user=user)
     return redirect(url_for('splash'))
+
+
+@app.route('/profile_view/<username>')
+def profile_view(username):
+    user = query_db("SELECT * FROM users WHERE username=?", (username,), True)
+    if user:
+        return render_template("profile_view.html", user=user)
+    else:
+        flash('That user does not exist', 'danger')
+        return redirect(url_for('home'))

@@ -30,11 +30,34 @@
                         </li>
                     </ul>
                 </div>
-{#                <form class="form-inline my-2 my-lg-0">#}
-{#                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">#}
-{#                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>#}
-{#                </form>#}
             </div>
      </nav>
 {% endblock %}
-{% block content %}<h2>Welcome to Matcha - {{ session['username'] }}</h2>{% endblock %}
+
+{% block content %}
+<div class="mx-auto w-75 mt-5">
+    <div class="list-group">
+        {% if users %}
+            {% for user in users %}
+                 <a href="{{ url_for('profile_view', username=user.username) }}" class="list-group-item list-group-item-action flex-column align-items-start">
+                     <div class="list-group list-group-horizontal list-group-flush">
+                         <div class="list-group-item border-0"><img src="{{ url_for('static', filename="img/default.png") }}" alt="..." class="img-thumbnail thumb-pic"></div>
+                         <div class="list-group-item w-100 border-0">
+                             <div class="d-flex w-100 justify-content-between">
+                                 <h5 class="mb-1">{{ user.username }}</h5>
+                                 {% if user.last_online == "Online" %}
+                                    <small class="text-info">{{ user.last_online }}</small>
+                                 {% else %}
+                                    <small class="text-danger">{{ user.last_online }}</small>
+                                 {% endif %}
+                             </div>
+                             <p class="mb-1">{{ user.bio }}</p>
+                             <small>{{ user.gender }} - {{ user.sex_orientation }}</small>
+                         </div>
+                     </div>
+                 </a>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

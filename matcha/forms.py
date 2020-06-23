@@ -50,4 +50,5 @@ class ProfileUpdateForm(FlaskForm):
     sex_orientation = SelectField('Sexual Orientation', choices=SEX_ORIENTATION, default='Bisexual')
     fame            = IntegerField('Fame:')
     geo_location    = StringField('Location:')
+    bio             = TextAreaField('Bio:')
     submit          = SubmitField('Update')
