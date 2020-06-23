@@ -17,7 +17,7 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                     </li>
-                   {% if current_user.is_authenticated %}
+                   {% if session['logged_in'] %}
                        <li class="nav-item"> <a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                    {% endif %}
                 </ul>
@@ -28,4 +28,56 @@
             </div>
      </nav>
 {% endblock %}
-{% block content %}<h1>Profile update page for - {{ current_user.username }}</h1>{% endblock %}
+{% block title %}Profile Update{% endblock %}
+
+{% block content %}
+    <div class="content-section w-50 mx-auto mt-5">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('profile_update') }}">
+                {{ form.hidden_tag() }}
+                <fieldset>
+                    <legend class="border-bottom">Profile Update</legend>
+                    <div class="form-group">
+                        {{ form.username.label(class="form-control-label") }}
+                        {{ form.username(class="form-control form-control-sm") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.email.label(class="form-control-label") }}
+                        {{ form.email(class="form-control form-control-sm") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.gender.label(class="form-control-label") }}
+                        {{ form.gender(class="form-control form-control-sm") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.sex_preference.label(class="form-control-label") }}
+                        {{ form.sex_preference(class="form-control form-control-sm") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.likes.label(class="form-control-label") }}
+                        <input type="text" class="form-control form-control-sm" value="{{ form.likes.data }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        {{ form.matches.label(class="form-control-label") }}
+                        <input type="text" class="form-control form-control-sm" value="{{ form.matches.data }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        {{ form.fame.label(class="form-control-label") }}
+                        <input type="text" class="form-control form-control-sm" value="{{ form.fame.data }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        {{ form.submit(class="btn btn-outline-info") }}
+                    </div>
+                </fieldset>
+            </form>
+            <div class="pt-2 pb-2">
+                <small class="text-muted">
+                    Have an account? <a class="ml-2" href="{{ url_for('login') }}">Login</a>
+                </small>
+            </div>
+        </div>
+    </div>
+    <script>
+
+    </script>
+{% endblock %}

@@ -1,6 +1,9 @@
 from flask import render_template, request, url_for, redirect, session, flash, Blueprint
 # from match
 # a.forms import LoginForm, SignupForm
+from matcha.forms import ProfileUpdateForm
+from matcha.user_lib.get_user import user_lib_get_user
+from matcha.user_lib.profile import user_lib_validate_profile_upfdate_form
 from matcha1 import app, bcrypt
 from flask_login import login_user, current_user, logout_user
 # from matcha.user_lib.create_user import create_user as create_user_lib
@@ -59,7 +62,14 @@ def home():
 
 @app.route('/profile_update')
 def profile_update():
-    return render_template("profile_update.html")
+    if 'logged_in' in session:
+        if session['logged_in']:
+            form = ProfileUpdateForm()
+            if request.method == "POST":
+                user = user_lib_get_user(session['username'])
+                return user_lib_validate_profile_upfdate_form(user)
+            return render_template("profile_update.html", form=form)
+    return redirect(url_for('splash'))
 
 
 @app.route('/browse')

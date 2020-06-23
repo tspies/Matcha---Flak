@@ -11,6 +11,6 @@ def query_db(query, args=(), one=False):
 
 def user_lib_create_user(form):
     hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-    user = query_db("INSERT INTO users (username, email, password, verified) VALUES (?,?,?,?)",
+    query_db("INSERT INTO users (username, email, password, verified) VALUES (?,?,?,?)",
                     (form.username.data, form.email.data, hashed_password, False,))
     g.db.commit()

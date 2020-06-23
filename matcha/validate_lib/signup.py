@@ -17,9 +17,6 @@ def validate_lib_signup_form(form):
 
     username = query_db("SELECT * FROM users WHERE username = ?", (form.username.data,))
     email = query_db("SELECT * FROM users WHERE email = ?", (form.email.data,))
-    print(username)
-    print(email)
-    print(form.password.data)
     if username:
         flash("That username is already in use, please choose another one.", 'danger')
         return False
@@ -79,3 +76,5 @@ def validate_lib_send_verification_email(form):
                       body=f"Thanks for signing up, please click on the following link to complete your registration: http://127.0.0.1:5000/verification/{token}",
                       recipients=["tspies.game@gmail.com"])
     mail.send(message)
+    flash("You have Signed up, please click the link in the email we have sent you to verify your account.", 'success')
+

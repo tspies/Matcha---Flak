@@ -1,6 +1,11 @@
 from flask_wtf                              import FlaskForm
-from wtforms                                import SubmitField, PasswordField, BooleanField, StringField
-from wtforms.fields.html5                   import EmailField
+from wtforms import SubmitField, PasswordField, BooleanField, StringField, TextAreaField, SelectField
+from wtforms.fields.html5                   import EmailField, IntegerField
+
+# , 'Gender Neutral', 'Non-Binary', 'Agender', 'Pangender', 'Genderqueer', 'Two-Spirit', 'Third Gender'
+
+GENDER_TYPES = ['Male', 'Female', 'Transgender', 'Gender Neutral', 'Non-Binary', 'Agender', 'Pangender', 'Genderqueer', 'Two-Spirit', 'Third Gender']
+SEX_ORIENTATION = ['Bisexual', 'Heterosexual', 'Homosexual']
 
 
 class LoginForm(FlaskForm):
@@ -30,5 +35,19 @@ class ResetPasswordForm(FlaskForm):
 
     email           = StringField('Email:')
     password        = PasswordField('New Pssword:')
-    pswd_confirm    = PasswordField('Confirm Password')
+    pswd_confirm    = PasswordField('Confirm Password:')
     submit          = SubmitField('Send Reset Link')
+
+
+class ProfileUpdateForm(FlaskForm):
+
+    username        = StringField('Username')
+    email           = StringField('Email:')
+    likes           = IntegerField('Likes:')
+    matches         = IntegerField('Matches:')
+    bio             = TextAreaField('Bio:')
+    gender          = SelectField('Gender:', choices=GENDER_TYPES, default='')
+    sex_preference  = SelectField('Sexual Orientation', choices=SEX_ORIENTATION, default='Bisexual')
+    fame            = IntegerField('Fame:')
+    geo_location    = StringField('Location:')
+    submit          = SubmitField('Update')
