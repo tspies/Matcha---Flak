@@ -51,4 +51,15 @@ class ProfileUpdateForm(FlaskForm):
     fame            = IntegerField('Fame:')
     geo_location    = StringField('Location:')
     bio             = TextAreaField('Bio:')
+    
     submit          = SubmitField('Update')
+
+    travelling      = BooleanField('Travelling')
+    exercise        = BooleanField('Exercise')
+    movies          = BooleanField('Movies')
+    dancing         = BooleanField('Dancing')
+    cooking         = BooleanField('Cooking')
+    outdoors        = BooleanField('Outdoors')
+    pets            = BooleanField('Pets')
+    photography     = BooleanField('Photography')
+    sports          = BooleanField('Sports')

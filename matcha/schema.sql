@@ -14,3 +14,33 @@ create table users (
     last_online string,
     verified string default(FALSE)
 );
+
+drop table if exists interests ;
+create table interests(
+    id integer primary key autoincrement,
+    username string not null,
+    travelling  integer default(0),
+    exercise    integer default(0),
+    movies      integer default(0),
+    dancing     integer default(0),
+    cooking     integer default(0),
+    outdoors    integer default(0),
+    politics    integer default(0),
+    pets        integer default(0),
+    photography integer default(0),
+    sports      integer default(0)
+);
+
+drop table if exists likes ;
+create table likes(
+    id integer primary key autoincrement,
+    user_liking string not null,
+    user_liked string not null
+);
+
+drop table if exists matches;
+create table matches(
+    id integer primary key autoincrement ,
+    user_1 string not null,
+    user_2 string not null
+);

@@ -2,8 +2,9 @@ import sqlite3
 from contextlib             import closing
 
 from flask                  import Flask, g
-from flask_bcrypt           import Bcrypt
 from flask_mail             import Mail
+from flask_bcrypt           import Bcrypt
+from flask_socketio         import SocketIO
 
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_DEFAULT_SENDER = 'noreply@matcha.com'
@@ -21,6 +22,7 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
+socketio = SocketIO(app)
 
 from matcha import views
 

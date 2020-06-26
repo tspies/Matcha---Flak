@@ -4,13 +4,14 @@ from flask                                      import render_template, g, reque
 
 from matcha                                     import app
 from matcha.forms                               import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm
-from matcha.user_lib.profile                    import user_lib_validate_profile_update_form, user_lib_populate_profle_update_form
-from matcha.user_lib.get_user                   import user_lib_get_user
+from matcha.user_lib.profile import user_lib_validate_profile_update_form, user_lib_populate_profle_update_form, \
+    user_lib_create_update_likes
+from matcha.user_lib.get_user import user_lib_get_user, user_lib_get_interests
 from matcha.validate_lib.email                  import validate_lib_email_verification, validate_lib_forgot_password, validate_lib_reset_password
 from matcha.validate_lib.login                  import validate_lib_login_form
 from matcha.validate_lib.logout                 import validate_lib_logout_user
 from matcha.validate_lib.signup                 import validate_lib_signup_form, validate_lib_send_verification_email
-from matcha.user_lib.create_user                import user_lib_create_user
+from matcha.user_lib.create_user import user_lib_create_user, user_lib_create_interests
 
 
 def get_db():
@@ -56,6 +57,7 @@ def signup():
                 if validate_lib_signup_form(form):
                     validate_lib_send_verification_email(form)
                     user_lib_create_user(form)
+                    user_lib_create_interests(form.username.data)
                     return redirect(url_for('login'))
             return render_template('signup.html', form=form)
         else:
@@ -110,21 +112,40 @@ def profile_update():
             if request.method == "POST":
                 form = ProfileUpdateForm()
                 user = user_lib_get_user(session['username'])
-                return user_lib_validate_profile_update_form(form, user)
+                interests = request.form.getlist('interest')
+                return user_lib_validate_profile_update_form(form, user, interests)
             else:
                 form = ProfileUpdateForm()
                 user = user_lib_get_user(session['username'])
-                form = user_lib_populate_profle_update_form(form, user)
+                interests = user_lib_get_interests(session['username'])
+                form = user_lib_populate_profle_update_form(form, user, interests)
 
-            return render_template("profile_update.html", form=form, user=user)
+            return render_template("profile_update.html", form=form, user=user, interests=interests)
     return redirect(url_for('splash'))
 
 
 @app.route('/profile_view/<username>')
 def profile_view(username):
     user = query_db("SELECT * FROM users WHERE username=?", (username,), True)
+    interests = query_db("SELECT * FROM interests WHERE username=?", (username,), True)
+    interest_list = []
+    if interests:
+        for key, value in interests.items():
+            if value == 1:
+                interest_list.append(key)
+
     if user:
-        return render_template("profile_view.html", user=user)
+        return render_template("profile_view.html", user=user, interests=interest_list)
     else:
         flash('That user does not exist', 'danger')
         return redirect(url_for('home'))
+
+
+@app.route('/like_uer/<username>', methods=['GET', 'POST'])
+def like_user(username):
+    already_liked = query_db("SELECT * FROM likes WHERE user_liking=? AND user_liked=?", (session['username'], username), True)
+    if already_liked:
+        flash("Hey! You have already winked at this person , wait for then to wink back at you.", 'danger')
+        return redirect(url_for('profile_view', username=username))
+    else:
+        return user_lib_create_update_likes(username)

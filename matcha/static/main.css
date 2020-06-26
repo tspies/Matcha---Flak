@@ -16,3 +16,8 @@
   max-width: 75px;
   max-height: 75px;
 }
+
+.profile-pic {
+  max-width: 150px;
+  max-height: 150px;
+}

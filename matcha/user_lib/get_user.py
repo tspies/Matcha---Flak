@@ -11,3 +11,9 @@ def query_db(query, args=(), one=False):
 def user_lib_get_user(username):
     user = query_db("SELECT * FROM users WHERE username=?", (username,), True)
     return user
+
+
+def user_lib_get_interests(username):
+    interests = query_db("SELECT * FROM interests WHERE username=? ", (username,), True)
+    return interests
+

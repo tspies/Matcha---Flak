@@ -14,3 +14,8 @@ def user_lib_create_user(form):
     query_db("INSERT INTO users (username, email, password, verified) VALUES (?,?,?,?)",
                     (form.username.data, form.email.data, hashed_password, False,))
     g.db.commit()
+
+
+def user_lib_create_interests(username):
+    query_db("INSERT INTO interests (username) VALUES (?)", (username,))
+    g.db.commit()

@@ -35,24 +35,54 @@
 
 {% block content %}
     {% if user %}
-        <div class="w-50 mx-auto mt-5">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">{{ user.username }}</li>
-                <li class="list-group-item">{{ user.likes }}</li>
-                <li class="list-group-item">{{ user.matches }}</li>
-                <li class="list-group-item">{{ user.gender }}</li>
-                <li class="list-group-item">{{ user.sex_orientation }}</li>
-                <li class="list-group-item">{{ user.fame }}</li>
-                <li class="list-group-item">{{ user.geo_location }}</li>
-                <li class="list-group-item">{{ user.bio }}</li>
-                <li class="list-group-item">
-                    {% if user.last_online == "Online" %}
-                        Status: Online
-                    {% else %}
-                        Status: Offline -  Last Seen: {{ user.last_online }}
-                    {% endif %}
-                </li>
-            </ul>
+        <div class=" mx-auto mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                       <ul class="list-group list-group-flush w-100">
+                            <li class="list-group-item"><h2>{{ user.username }}</h2></li>
+                            <li class="list-group-item">Likes: {{ user.likes }}</li>
+                            <li class="list-group-item">Matches: {{ user.matches }}</li>
+                            <li class="list-group-item">Gender: {{ user.gender }}</li>
+                            <li class="list-group-item">Sexual Orientaion: {{ user.sex_orientation }}</li>
+                            <li class="list-group-item">Fame: {{ user.fame }}</li>
+                            <li class="list-group-item">Geo: {{ user.geo_location }}</li>
+                            <li class="list-group-item">{{ user.bio }}</li>
+                            <li class="list-group-item">
+                                {% if user.last_online == "Online" %}
+                                    Status: Online
+                                {% else %}
+                                    Status: Offline -  Last Seen: {{ user.last_online }}
+                                {% endif %}
+                            </li>
+                           <div class="row mt-2 w-100">
+                               <div class="col">
+                                    <form method="POST" action="{{ url_for('like_user', username=user.username) }}" class="">
+                                        <button type="submit" class="btn btn-danger">Wink</button>
+                                    </form>
+                               </div>
+                               <div class="col">
+
+                               </div>
+                           </div>
+                        </ul>
+                    </div>
+                    <div class="col mx-auto">
+                        <img src="{{ url_for('static', filename="img/default.png") }}" alt="..." class="img-thumbnail mx-auto d-block profile-pic">
+                        <ul class="list-group list-group-flush w-100">
+                            {% if interests %}
+                                <li class="list-group-item"><h4>Interests:</h4></li>
+                            {% else %}
+                                <li class="list-group-item mx-auto"><h4>{{ user.username }} has no Interests.</h4></li>
+                            {% endif %}
+
+                            {% for interest in interests %}
+                                <li class="list-group-item">{{ interest }}</li>
+                            {% endfor %}
+                        <ul>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endif %}
 {% endblock %}
