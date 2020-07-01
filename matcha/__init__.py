@@ -5,9 +5,10 @@ from flask                  import Flask, g
 from flask_mail             import Mail
 from flask_bcrypt           import Bcrypt
 from flask_socketio         import SocketIO
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 
 MAIL_SERVER = 'smtp.gmail.com'
-MAIL_DEFAULT_SENDER = 'noreply@matcha.com'
+MAIL_DEFAULT_SENDER = 'matchadatingxxx@gmail.com'
 MAIL_USERNAME = 'matchadatingxxx@gmail.com'
 MAIL_PASSWORD = 'q1w2e3r4t5!'
 MAIL_PORT = 465
@@ -18,13 +19,30 @@ SECRET_KEY = "orangepotato"
 DATABASE = 'database.db'
 TEST_DATABASE = ':memory:'
 
+UPLOADED_PHOTOS_DEST = 'matcha/static/img'
+
 app = Flask(__name__)
 app.config.from_object(__name__)
-bcrypt = Bcrypt(app)
-mail = Mail(app)
-socketio = SocketIO(app)
+bcrypt      = Bcrypt(app)
+mail        = Mail(app)
+socketio    = SocketIO(app)
+photos      = UploadSet('photos', IMAGES)
+configure_uploads(app, photos)
+patch_request_class(app)
 
 from matcha import views
+
+
+@app.before_request
+def before_request():
+    g.db = connect_db()
+
+
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'sqlite_db'):
+        g.sqlite_db.close()
 
 
 def connect_db():
@@ -37,16 +55,6 @@ def init_db():
             db.cursor().executescript(f.read().decode('utf-8'))
         if db.commit():
             print("DATABASE Created")
-
-
-@app.before_request
-def before_request():
-    g.db = connect_db()
-
-
-@app.teardown_request
-def teardown_request(exception):
-    g.db.close()
 
 
 def query_db(query, args=(), one=False, commit=False):

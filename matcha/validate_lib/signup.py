@@ -20,6 +20,9 @@ def validate_lib_signup_form(form):
     if username:
         flash("That username is already in use, please choose another one.", 'danger')
         return False
+    if not form.firstname.data or not form.lastname.data:
+        flash("Please provide a first and last name", 'danger')
+        return False
     if email:
         flash("That email is already in in use, plese choose another one.", 'danger')
         return False

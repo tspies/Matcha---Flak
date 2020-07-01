@@ -14,7 +14,7 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
-def user_lib_validate_profile_update_form(form, user, post_form_interests):
+def user_lib_validate_profile_update_form(form, user, post_form_interests, pictures):
     interest_list = ['travelling', 'exercise', 'movies', 'dancing', 'cooking', 'outdoors', 'pets', 'photography', 'sports']
     update_interests = []
 
@@ -84,8 +84,8 @@ def user_lib_validate_profile_update_form(form, user, post_form_interests):
         send_verification_email(form)
         return redirect(url_for('login'))
 
-    query_db("UPDATE users SET gender=?, sex_orientation=?, bio=? WHERE username=?",
-             (form.gender.data, form.sex_orientation.data, form.bio.data, session['username']))
+    query_db("UPDATE users SET gender=?, sex_orientation=?, bio=?, firstname=?, lastname=?, age=?, complete=? WHERE username=?",
+             (form.gender.data, form.sex_orientation.data, form.bio.data, form.firstname.data, form.lastname.data, form.age.data, 'True', session['username']))
     g.db.commit()
 
     query_db(
@@ -93,18 +93,23 @@ def user_lib_validate_profile_update_form(form, user, post_form_interests):
         (update_interests[0], update_interests[1], update_interests[2], update_interests[3], update_interests[4],
          update_interests[5], update_interests[6], update_interests[7], update_interests[8], session['username']))
     g.db.commit()
-    return redirect(url_for('profile_update', form=form, user=user))
+    return redirect(url_for('profile_update', form=form, user=user, pictures=pictures))
 
 
 def user_lib_populate_profle_update_form(form, user, interests):
 
+    print(user['age'])
     form.bio.data               = user['bio']
+    form.age.data               = user['age']
     form.fame.data              = user['fame']
     form.email.data             = user['email']
     form.likes.data             = user['likes']
     form.gender.data            = user['gender']
     form.matches.data           = user['matches']
     form.username.data          = user['username']
+    form.lastname.data          = user['lastname']
+    form.firstname.data         = user['firstname']
+    form.profile_pic.data       = user['profile_pic']
     form.sex_orientation.data   = user['sex_orientation']
 
     form.pets.data              = interests['pets']
@@ -120,6 +125,11 @@ def user_lib_populate_profle_update_form(form, user, interests):
     return form
 
 
+def user_lib_get_pictures(username):
+    pics = query_db("SELECT * FROM images ")
+    return pics
+
+
 def user_lib_create_update_likes(username):
     query_db("INSERT INTO likes (user_liking, user_liked) VALUES (?,?)", (session['username'], username))
     g.db.commit()
@@ -128,7 +138,6 @@ def user_lib_create_update_likes(username):
     g.db.commit()
     check_if_users_match(username)
     return redirect(url_for('profile_view', username=username))
-
 
 def check_if_users_match(username):
     user_1 = query_db("SELECT * FROM likes WHERE user_liking=? and user_liked=?", (session['username'], username))

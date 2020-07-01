@@ -20,8 +20,10 @@ class SignupForm(FlaskForm):
 
     email           = EmailField('Email:')
     username        = StringField('Username:')
-    password        = PasswordField('Password')
-    pswd_confirm    = PasswordField('Confirm Password')
+    firstname       = StringField('Firstname:')
+    lastname        = StringField('Lastname:')
+    password        = PasswordField('Password:')
+    pswd_confirm    = PasswordField('Confirm Password:')
     submit          = SubmitField('Signup')
 
 
@@ -42,7 +44,11 @@ class ResetPasswordForm(FlaskForm):
 class ProfileUpdateForm(FlaskForm):
 
     username        = StringField('Username')
+    firstname       = StringField('Firstname:')
+    profile_pic     = StringField()
+    lastname        = StringField('Lastname:')
     email           = StringField('Email:')
+    age             = IntegerField('Age:')
     likes           = IntegerField('Likes:')
     matches         = IntegerField('Matches:')
     bio             = TextAreaField('Bio:')
@@ -52,7 +58,7 @@ class ProfileUpdateForm(FlaskForm):
     geo_location    = StringField('Location:')
     bio             = TextAreaField('Bio:')
     
-    submit          = SubmitField('Update')
+    submit          = SubmitField('Update Profile')
 
     travelling      = BooleanField('Travelling')
     exercise        = BooleanField('Exercise')

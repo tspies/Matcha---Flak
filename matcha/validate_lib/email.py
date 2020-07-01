@@ -1,12 +1,11 @@
 import re
 
-from flask import g, flash, redirect, url_for, render_template, current_app, request, session
+from flask              import g, flash, redirect, url_for, render_template, current_app, request, session
 from matcha             import bcrypt
 from flask_mail         import Message
 from itsdangerous       import URLSafeTimedSerializer
 
 from matcha import mail
-from matcha.forms import ForgotPasswordForm
 
 
 def query_db(query, args=(), one=False):

@@ -13,7 +13,7 @@
                     <li class="nav-item dropdown">  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Dropdown
                     </a>    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="{{ url_for('notifications') }}">Notifications</a>
                         <a class="dropdown-item" href="#">Another action</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Something else here</a>
@@ -35,27 +35,57 @@
 {% endblock %}
 
 {% block content %}
+    <h1>{{ username }}</h1>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script> let username = '{{ username }}'</script>
+    <script src="{{ url_for('static', filename='socket.js') }}"></script>
+    <input type="text" id="notification_message">
+    <button id="send_notification_message">Send Notification</button>
+    <br>
+    <br>
+    <br>
+    Message: <input type="text" id="private_message">
+    Username: <input type="text" id="send_to_username">
+    <button id="send_private_message">Send Pvt Message</button>
+
+    <div class="container mx-auto" align="center">
+       <ul class="nav nav-tabs w-100">
+           <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#nav-product-list-all">All</a></li>
+           <li class="nav-item"><a class="nav-link " data-toggle="tab" href="#nav-product-list-accommodation">Fame</a></li>
+           <li class="nav-item"><a class="nav-link " data-toggle="tab" href="#nav-product-list-car-hire">Interests</a></li>
+           <li class="nav-item"><a class="nav-link " data-toggle="tab" href="#nav-product-list-rail">Geo</a></li>
+       </ul>
+    </div>
+
+
 <div class="mx-auto w-75 mt-5">
     <div class="list-group">
-        {% if users %}
-            {% for user in users %}
-                 <a href="{{ url_for('profile_view', username=user.username) }}" class="list-group-item list-group-item-action flex-column align-items-start">
-                     <div class="list-group list-group-horizontal list-group-flush">
-                         <div class="list-group-item border-0"><img src="{{ url_for('static', filename="img/default.png") }}" alt="..." class="img-thumbnail thumb-pic"></div>
-                         <div class="list-group-item w-100 border-0">
-                             <div class="d-flex w-100 justify-content-between">
-                                 <h5 class="mb-1">{{ user.username }}</h5>
-                                 {% if user.last_online == "Online" %}
-                                    <small class="text-info">{{ user.last_online }}</small>
-                                 {% else %}
-                                    <small class="text-danger">{{ user.last_online }}</small>
-                                 {% endif %}
+        {% if suggestions %}
+            {% for suggestion in suggestions %}
+                <div class="list-group mb-3">
+                    <a href="{{ url_for('profile_view', username=suggestion.username) }}" class="list-group-item-action flex-column align-items-start">
+                         <div class="row">
+                             <div class="list-group-item w-100 list-group-item-action">
+                                 <div class="d-flex w-100 justify-content-between">
+                                    <img src="{{ url_for('static', filename="img/{{ suggestion.profile_pic }}") }}" alt="..." class="img-thumbnail thumb-pic">
+                                    <h5 class="mb-1">{{ suggestion.username }}</h5>
+                                    {% if suggestion.last_online == "Online" %}
+                                       <small class="text-info">{{ suggestion.last_online }}</small>
+                                    {% else %}
+                                       <small class="text-danger">{{ suggestion.last_online }}</small>
+                                    {% endif %}
+                                </div>
                              </div>
-                             <p class="mb-1">{{ user.bio }}</p>
-                             <small>{{ user.gender }} - {{ user.sex_orientation }}</small>
                          </div>
-                     </div>
-                 </a>
+                        <div class="row">
+                            <div class="list-group-item w-100">
+{#                                <p class="mb-1">{{ suggestion.bio }}</p>#}
+                                <small>{{ suggestion.gender }} - {{ suggestion.sex_orientation }}</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
             {% endfor %}
         {% endif %}
     </div>

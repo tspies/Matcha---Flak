@@ -1,17 +1,23 @@
 drop table if exists users;
 create table users (
     id integer primary key autoincrement,
+    profile_pic string default('default.png'),
+    pics integer default(0),
     username string not null,
+    firstname string not null,
+    lastname string not null,
     email string not null,
     password string not null,
     likes integer default(0),
     matches integer default(0),
     bio text default('Tell everyone about yourself...'),
     gender string,
+    age integer default(0),
     sex_orientation string,
     fame integer default(0),
     geo_location string,
-    last_online string,
+    last_online string default('Never'),
+    complete string default('False'),
     verified string default(FALSE)
 );
 
@@ -40,7 +46,22 @@ create table likes(
 
 drop table if exists matches;
 create table matches(
-    id integer primary key autoincrement ,
+    id integer primary key autoincrement,
     user_1 string not null,
     user_2 string not null
+);
+
+drop table if exists messages;
+create table messages(
+    id integer primary key autoincrement,
+    sender string not null,
+    recipient string not null,
+    message text not null,
+    timestamp string
+    );
+
+drop table if exists images;
+create table images(
+    username string not null,
+    file_name string not null
 );

@@ -34,11 +34,19 @@
 {% endblock %}
 
 {% block content %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script>
+        let username = '{{ session['username'] }}';
+        let recipient = '{{ user.username }}'
+    </script>
+    <script src="{{ url_for('static', filename='socket.js') }}">
+    </script>
     {% if user %}
         <div class=" mx-auto mt-5">
             <div class="container">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm-12 col-md-6">
                        <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item"><h2>{{ user.username }}</h2></li>
                             <li class="list-group-item">Likes: {{ user.likes }}</li>
@@ -57,17 +65,21 @@
                             </li>
                            <div class="row mt-2 w-100">
                                <div class="col">
-                                    <form method="POST" action="{{ url_for('like_user', username=user.username) }}" class="">
-                                        <button type="submit" class="btn btn-danger">Wink</button>
-                                    </form>
+                                   <form action="{{ url_for('wink', username=user.username) }}">
+                                       <button type="submit" class="btn btn-danger" id="wink-button">Wink</button>
+                                   </form>
                                </div>
                                <div class="col">
-
+                                   {% if matched %}
+                                           <button type="submit" class="btn btn-danger">Chat</button>
+                                   {% else %}
+                                       <small>You can only chat if you have matched with {{ user.username }}</small>
+                                   {% endif %}
                                </div>
                            </div>
                         </ul>
                     </div>
-                    <div class="col mx-auto">
+                    <div class="col-sm-12  col-md-6 mx-auto">
                         <img src="{{ url_for('static', filename="img/default.png") }}" alt="..." class="img-thumbnail mx-auto d-block profile-pic">
                         <ul class="list-group list-group-flush w-100">
                             {% if interests %}
@@ -79,7 +91,7 @@
                             {% for interest in interests %}
                                 <li class="list-group-item">{{ interest }}</li>
                             {% endfor %}
-                        <ul>
+                        </ul>
                     </div>
                 </div>
             </div>
