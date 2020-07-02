@@ -7,7 +7,7 @@ window.onload=function() {
         socket.emit('connect_user', {'username': username});
     })
 
-    $('#wink-button').on('click', function() {
+    $('#wink-b').on('click', function() {
             socket_notifications.emit('notification', { 'recipient': recipient,
                                                             'sender': username,
                                                             'message': " winked at you!"});
@@ -29,7 +29,7 @@ window.onload=function() {
     });
 
     socket_notifications.on('new_match', function(msg){
-        print(msg)
+        alert(msg)
     });
 
 };

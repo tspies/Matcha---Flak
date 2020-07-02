@@ -10,12 +10,12 @@
 {#                <li class="nav-item">   <a class="nav-link" href="#">Link</a>#}
 {#                </li>#}
                 <li class="nav-item dropdown">  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown
+                    More Info
                 </a>    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="#">Notifications</a>
                     <a class="dropdown-item" href="#">History</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
+{#                    <div class="dropdown-divider"></div>#}
+{#                    <a class="dropdown-item" href="#">Something else here</a>#}
                 </div>
                 </li>
                 {% if session['logged_in'] %}
@@ -50,6 +50,7 @@
                         <img src="{{ url_for('static', filename="img/" + user.profile_pic) }}" alt="..." class="img-thumbnail mx-auto d-block profile-pic mb-3">
                         <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item"><h2>{{ user.username }}</h2></li>
+                            <li class="list-group-item">Age: {{ user.age }}</li>
                             <li class="list-group-item">Likes: {{ user.likes }}</li>
                             <li class="list-group-item">Matches: {{ user.matches }}</li>
                             <li class="list-group-item">Gender: {{ user.gender }}</li>
@@ -67,9 +68,15 @@
                             <div class="row mt-2 w-100">
                                 {% if session_user.profile_pic != 'default.png' %}
                                     <div class="col">
+                                    {% if winked %}
+                                        <form action="{{ url_for('unwink', username=user.username) }}">
+                                            <button type="submit" class="btn btn-danger" id="">Un-Wink</button>
+                                        </form>
+                                    {% else %}
                                         <form action="{{ url_for('wink', username=user.username) }}">
                                             <button type="submit" class="btn btn-danger" id="wink-button">Wink</button>
                                         </form>
+                                    {% endif %}
                                     </div>
                                     <div class="col">
                                         {% if matched %}
@@ -103,7 +110,7 @@
                         <div class="row">
                             {% if pictures %}
                                 {% for picture in pictures %}
-                                    <div class="col-sm-12 col-md-6 mb-2">
+                                    <div class="col-sm-12 col-md-6 mt-2 mb-2">
                                         <img src="{{ url_for('static', filename="img/" + picture.file_name) }}" alt="..." class="img-thumbnail thumb-pic profile-pic">
                                     </div>
                                 {% endfor %}
@@ -116,4 +123,8 @@
             </div>
         </div>
     {% endif %}
+{% endblock %}
+
+{% block footer %}
+    <small class="mr-4">Logged in as : {{ session_user.username }}</small>
 {% endblock %}

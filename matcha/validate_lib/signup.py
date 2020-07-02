@@ -77,7 +77,7 @@ def validate_lib_send_verification_email(form):
 
     message = Message(subject="Matcha Verification",
                       body=f"Thanks for signing up, please click on the following link to complete your registration: http://127.0.0.1:5000/verification/{token}",
-                      recipients=["tspies.game@gmail.com"])
+                      recipients=[form.email.data])
     mail.send(message)
     flash("You have Signed up, please click the link in the email we have sent you to verify your account.", 'success')
 

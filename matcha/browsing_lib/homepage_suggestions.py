@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, session
 
 
 def query_db(query, args=(), one=False):
@@ -9,5 +9,5 @@ def query_db(query, args=(), one=False):
 
 
 def browsing_lib_get_suggested_user_profiles(current_user_object):
-    suggestions = query_db("SELECT * FROM users")
+    suggestions = query_db("SELECT * FROM users WHERE NOT username=?", (session['username'],))
     return suggestions

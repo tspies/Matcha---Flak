@@ -7,10 +7,11 @@ from matcha                                     import app, socketio
 from matcha.browsing_lib.homepage_suggestions   import browsing_lib_get_suggested_user_profiles
 from matcha.forms                               import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm
 from matcha.notification_lib.wink               import notification_lib_check_match
-from matcha.user_lib.profile                    import user_lib_validate_profile_update_form, user_lib_populate_profle_update_form, user_lib_create_update_likes, user_lib_get_pictures
+from matcha.user_lib.profile import user_lib_validate_profile_update_form, user_lib_populate_profle_update_form, \
+    user_lib_get_pictures, user_lib_create_wink, user_lib_unwink
 from matcha.user_lib.get_user                   import user_lib_get_user, user_lib_get_interests
 from matcha.validate_lib.email                  import validate_lib_email_verification, validate_lib_forgot_password, validate_lib_reset_password
-from matcha.validate_lib.image import validate_lib_handle_picture_upload, validate_lib_update_profile_picture
+from matcha.validate_lib.image                  import validate_lib_handle_picture_upload, validate_lib_update_profile_picture
 from matcha.validate_lib.login                  import validate_lib_login_form
 from matcha.validate_lib.logout                 import validate_lib_logout_user
 from matcha.validate_lib.signup                 import validate_lib_signup_form, validate_lib_send_verification_email
@@ -58,10 +59,10 @@ def connect_user(data):
 
 @socketio.on('notification', namespace='/notification')
 def handle_notification(data):
+    return
     message = data['sender'] + data['message'] + "  -- " + data['recipient']
     recipient_sid = clients[data['recipient']]
     sender_sid = clients[data['sender']]
-    print(message)
     emit('new_wink', message, room=recipient_sid)
     if notification_lib_check_match(data['recipient']):
         emit('new_match', message, room=recipient_sid)
@@ -182,7 +183,6 @@ def profile_update():
                 interests = user_lib_get_interests(session['username'])
                 form = user_lib_populate_profle_update_form(form, user, interests)
                 pictures = user_lib_get_pictures(session['username'])
-                print(user)
             return render_template("profile_update.html", form=form, user=user, interests=interests, pictures=pictures)
     return redirect(url_for('splash'))
 
@@ -216,6 +216,10 @@ def profile_view(username):
     matched = query_db("SELECT * from matches WHERE (user_1=? AND user_2=?) OR (user_1=? AND user_2=?)",
                        (username, session['username'], session['username'], username), True)
     pictures = query_db("SELECT * FROM images WHERE username=?", (username,))
+    winked = query_db("SELECT * FROM likes WHERE (user_liking=? AND user_liked=?)", (session['username'], username))
+    # test_wink = query_db("SELECT * FROM likes")
+    # print(test_wink)
+    print(matched)
     session_user = query_db("SELECT * FROM users WHERE username=?", (session['username'],), True)
     interest_list = []
     if 'id' in interests: interests.pop('id')
@@ -225,7 +229,7 @@ def profile_view(username):
                 interest_list.append(key)
 
     if user_profile:
-        return render_template("profile_view.html", user=user_profile, session_user=session_user, interests=interest_list, matched=matched, pictures=pictures)
+        return render_template("profile_view.html", winked=winked, user=user_profile, session_user=session_user, interests=interest_list, matched=matched, pictures=pictures)
     else:
         flash('That user does not exist', 'danger')
         return redirect(url_for('home'))
@@ -239,7 +243,12 @@ def wink(username):
         flash("Hey! You have already winked at this person , wait for then to wink back at you.", 'danger')
         return redirect(url_for('profile_view', username=username))
     else:
-        return user_lib_create_update_likes(username)
+        return user_lib_create_wink(username)
+
+
+@app.route('/unwink/<username>', methods=['GET', 'POST'])
+def unwink(username):
+    return user_lib_unwink(username)
 
 
 @app.route('/notification', methods=['GET', 'POST'])

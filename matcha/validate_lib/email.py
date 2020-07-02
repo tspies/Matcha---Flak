@@ -55,7 +55,7 @@ def validate_lib_forgot_password(form):
         token = serializer.dumps(form.email.data, salt='email-confirm-salt')
         message = Message(subject="Matcha Password Reset",
                           body=f"You have requested to reset your password, please click on the following link to reset your password: http://127.0.0.1:5000{url_for('reset_password', token=token)}",
-                          recipients=["tspies.game@gmail.com"])
+                          recipients=[form.email.data])
         mail.send(message)
         flash("We have sent you a link to reset your password, please click on it to reset your password.", 'success')
         if 'logged_in' in session:

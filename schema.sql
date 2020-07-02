@@ -16,7 +16,7 @@ create table users (
     gender string,
     age integer default(0),
     sex_orientation string,
-    fame integer default(0),
+    fame integer default(100),
     geo_location string,
     last_online string default('Never'),
     complete string default('False'),

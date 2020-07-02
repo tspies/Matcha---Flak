@@ -98,7 +98,6 @@ def user_lib_validate_profile_update_form(form, user, post_form_interests, pictu
 
 def user_lib_populate_profle_update_form(form, user, interests):
 
-    print(user['age'])
     form.bio.data               = user['bio']
     form.age.data               = user['age']
     form.fame.data              = user['fame']
@@ -130,14 +129,52 @@ def user_lib_get_pictures(username):
     return pictures
 
 
-def user_lib_create_update_likes(username):
+def user_lib_create_wink(username):
     query_db("INSERT INTO likes (user_liking, user_liked) VALUES (?,?)", (session['username'], username))
     g.db.commit()
     flash("You have winked at " + username, 'success')
     query_db("UPDATE users SET likes=likes+1 WHERE username=?", (username,))
     g.db.commit()
+    query_db("UPDATE users SET fame = ((likes + matches + 1) * 100) WHERE username=?", (username,))
+    g.db.commit()
     check_if_users_match(username)
     return redirect(url_for('profile_view', username=username))
+
+
+def user_lib_unwink(username):
+    query_db("DELETE FROM likes WHERE (user_liking=? AND user_liked=?) OR (user_liking=? AND user_liked=?)",
+             (username, session['username'], session['username'], username))
+    g.db.commit()
+    query_db("UPDATE users SET likes=likes-1 WHERE username=?", (username,))
+    g.db.commit()
+    query_db("UPDATE users SET likes=likes-1 WHERE username=?", (session['username'],))
+    g.db.commit()
+    flash("You have un-winked " + username, 'success')
+    match_check = query_db("SELECT * FROM matches WHERE (user_1=? AND user_2=?) OR (user_1=? AND user_2=?)",
+              (session['username'], username, username, session['username']))
+    if match_check:
+        user_1 = query_db("SELECT * FROM matches WHERE user_1=? AND user_2=?", (session['username'], username))
+        user_2 = query_db("SELECT * FROM matches WHERE user_1=? AND user_2=?", (username, session['username']))
+        if user_1:
+            print(session['username'])
+            print(user_1)
+            query_db("DELETE FROM matches WHERE user_1=? AND user_2=?", (session['username'], username))
+            g.db.commit()
+        if user_2:
+            print(username)
+            print(user_2)
+            query_db("DELETE FROM matches WHERE user_1=? AND user_2=?", (username, session['username']))
+            g.db.commit()
+
+        testmatch = query_db("SELECT * FROM matches")
+        print(testmatch)
+        query_db("UPDATE users SET matches=matches-1 WHERE username=?", (session['username'],))
+        g.db.commit()
+        query_db("UPDATE users SET matches=matches-1 WHERE username=?", (username,))
+        g.db.commit()
+        flash("You have unmatched from " + username, 'success')
+    return redirect(url_for('profile_view', username=username))
+
 
 def check_if_users_match(username):
     user_1 = query_db("SELECT * FROM likes WHERE user_liking=? and user_liked=?", (session['username'], username))
