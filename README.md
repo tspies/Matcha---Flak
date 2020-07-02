@@ -20,6 +20,6 @@ In terminal make ure (venv) is running, then:
 
 Run the Flask server
 In terminal make ure (venv) is running, then:
-`python run.py`
+`python run.py` 
 
 
