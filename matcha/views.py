@@ -97,8 +97,8 @@ def login():
     if 'logged_in' in session:
         if not session['logged_in']:
             form = LoginForm()
-            all_user = query_db("SELECT * FROM users")
-            print(all_user)
+            # all_user = query_db("SELECT * FROM users")
+            # print(all_user)
             if request.method == "POST":
                 return validate_lib_login_form(form)
             return render_template("login.html", form=form)
