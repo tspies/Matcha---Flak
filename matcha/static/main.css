@@ -21,3 +21,25 @@
   max-width: 150px;
   max-height: 150px;
 }
+
+.suggestion {
+  border-radius: 20px;
+}
+
+body {
+  background: url('img/Splash.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: darkseagreen;
+  color: black;
+  text-align: right;
+}

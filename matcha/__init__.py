@@ -16,7 +16,7 @@ MAIL_USE_TSL  = False
 MAIL_USE_SSL = True
 
 SECRET_KEY = "orangepotato"
-DATABASE = 'database.db'
+DATABASE = 'DATABASE.db'
 TEST_DATABASE = ':memory:'
 
 UPLOADED_PHOTOS_DEST = 'matcha/static/img'

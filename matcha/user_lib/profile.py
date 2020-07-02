@@ -126,8 +126,8 @@ def user_lib_populate_profle_update_form(form, user, interests):
 
 
 def user_lib_get_pictures(username):
-    pics = query_db("SELECT * FROM images ")
-    return pics
+    pictures = query_db("SELECT * FROM images WHERE username=?", (username,))
+    return pictures
 
 
 def user_lib_create_update_likes(username):

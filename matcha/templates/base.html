@@ -10,7 +10,8 @@
     </head>
 
 
-    <body class="h-100 w-100">
+    <body class="">
+        <div class="bg"></div>
         {% block nav %}{% endblock %}
         <div class="ml-1 mr-1">
           {% with messages = get_flashed_messages(with_categories=true) %}
@@ -29,5 +30,8 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     </body>
 
+    <footer>
+        {% block footer %}{% endblock %}
+    </footer>
 
 </html>

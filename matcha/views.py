@@ -96,6 +96,8 @@ def login():
     if 'logged_in' in session:
         if not session['logged_in']:
             form = LoginForm()
+            all_user = query_db("SELECT * FROM users")
+            print(all_user)
             if request.method == "POST":
                 return validate_lib_login_form(form)
             return render_template("login.html", form=form)
@@ -130,6 +132,7 @@ def home():
         current_user_object = user_lib_get_user(session['username'])
         if current_user_object['complete'] != 'False':
             suggested_profiles = browsing_lib_get_suggested_user_profiles(current_user_object)
+            print(suggested_profiles)
             return render_template("home.html", suggestions=suggested_profiles, username=session['username'])
         else:
             flash('Please complete your profile to continue', 'danger')
@@ -160,7 +163,6 @@ def unverified():
 
 @app.route('/verification/<token>')
 def verification(token):
-    print(token)
     return validate_lib_email_verification(token)
 
 
@@ -209,18 +211,21 @@ def update_profile_picture(filename):
 
 @app.route('/profile_view/<username>')
 def profile_view(username):
-    user = query_db("SELECT * FROM users WHERE username=?", (username,), True)
+    user_profile = query_db("SELECT * FROM users WHERE username=?", (username,), True)
     interests = query_db("SELECT * FROM interests WHERE username=?", (username,), True)
     matched = query_db("SELECT * from matches WHERE (user_1=? AND user_2=?) OR (user_1=? AND user_2=?)",
                        (username, session['username'], session['username'], username), True)
+    pictures = query_db("SELECT * FROM images WHERE username=?", (username,))
+    session_user = query_db("SELECT * FROM users WHERE username=?", (session['username'],), True)
     interest_list = []
+    if 'id' in interests: interests.pop('id')
     if interests:
         for key, value in interests.items():
             if value == 1:
                 interest_list.append(key)
 
-    if user:
-        return render_template("profile_view.html", user=user, interests=interest_list, matched=matched)
+    if user_profile:
+        return render_template("profile_view.html", user=user_profile, session_user=session_user, interests=interest_list, matched=matched, pictures=pictures)
     else:
         flash('That user does not exist', 'danger')
         return redirect(url_for('home'))

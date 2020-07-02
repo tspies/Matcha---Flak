@@ -2,18 +2,18 @@
 {% block title %}Profile View{% endblock %}
 
 {% block nav %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light"> <a class="navbar-brand" href="#">Navbar</a> <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">  <span class="navbar-toggler-icon"></span></button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light"> <a class="navbar-brand" href="{{ url_for('home') }}">Home</a> <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">  <span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">    <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item">   <a class="nav-link" href="#">Link</a>
-                </li>
+{#                <li class="nav-item">   <a class="nav-link" href="#">Link</a>#}
+{#                </li>#}
                 <li class="nav-item dropdown">  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Dropdown
                 </a>    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Notifications</a>
+                    <a class="dropdown-item" href="#">History</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Something else here</a>
                 </div>
@@ -47,7 +47,8 @@
             <div class="container">
                 <div class="row">
                     <div class="col-sm-12 col-md-6">
-                       <ul class="list-group list-group-flush w-100">
+                        <img src="{{ url_for('static', filename="img/" + user.profile_pic) }}" alt="..." class="img-thumbnail mx-auto d-block profile-pic mb-3">
+                        <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item"><h2>{{ user.username }}</h2></li>
                             <li class="list-group-item">Likes: {{ user.likes }}</li>
                             <li class="list-group-item">Matches: {{ user.matches }}</li>
@@ -63,24 +64,29 @@
                                     Status: Offline -  Last Seen: {{ user.last_online }}
                                 {% endif %}
                             </li>
-                           <div class="row mt-2 w-100">
-                               <div class="col">
-                                   <form action="{{ url_for('wink', username=user.username) }}">
-                                       <button type="submit" class="btn btn-danger" id="wink-button">Wink</button>
-                                   </form>
-                               </div>
-                               <div class="col">
-                                   {% if matched %}
-                                           <button type="submit" class="btn btn-danger">Chat</button>
-                                   {% else %}
-                                       <small>You can only chat if you have matched with {{ user.username }}</small>
-                                   {% endif %}
-                               </div>
-                           </div>
+                            <div class="row mt-2 w-100">
+                                {% if session_user.profile_pic != 'default.png' %}
+                                    <div class="col">
+                                        <form action="{{ url_for('wink', username=user.username) }}">
+                                            <button type="submit" class="btn btn-danger" id="wink-button">Wink</button>
+                                        </form>
+                                    </div>
+                                    <div class="col">
+                                        {% if matched %}
+                                            <button type="submit" class="btn btn-danger">Chat</button>
+                                        {% else %}
+                                            <small>You can only chat if you have matched with {{ user.username }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="col">
+                                        <small>You can only Wink and Chat with users when you have updated your profile picture</small>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </ul>
                     </div>
-                    <div class="col-sm-12  col-md-6 mx-auto">
-                        <img src="{{ url_for('static', filename="img/default.png") }}" alt="..." class="img-thumbnail mx-auto d-block profile-pic">
+                    <div class="col-sm-12  col-md-6 mx-auto mt-2 mb-2">
                         <ul class="list-group list-group-flush w-100">
                             {% if interests %}
                                 <li class="list-group-item"><h4>Interests:</h4></li>
@@ -92,6 +98,19 @@
                                 <li class="list-group-item">{{ interest }}</li>
                             {% endfor %}
                         </ul>
+                    </div>
+                    <div class="col-sm-12 col-md-12 mx-auto">
+                        <div class="row">
+                            {% if pictures %}
+                                {% for picture in pictures %}
+                                    <div class="col-sm-12 col-md-6 mb-2">
+                                        <img src="{{ url_for('static', filename="img/" + picture.file_name) }}" alt="..." class="img-thumbnail thumb-pic profile-pic">
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col"><h3>No Uploaded Images</h3></div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

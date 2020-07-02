@@ -1,8 +1,7 @@
+from wtforms                                import SubmitField, PasswordField, BooleanField, StringField, TextAreaField, SelectField
 from flask_wtf                              import FlaskForm
-from wtforms import SubmitField, PasswordField, BooleanField, StringField, TextAreaField, SelectField
-from wtforms.fields.html5                   import EmailField, IntegerField
+from wtforms.fields.html5                   import IntegerField
 
-# , 'Gender Neutral', 'Non-Binary', 'Agender', 'Pangender', 'Genderqueer', 'Two-Spirit', 'Third Gender'
 
 GENDER_TYPES = ['Male', 'Female', 'Transgender', 'Gender Neutral', 'Non-Binary', 'Agender', 'Pangender', 'Genderqueer', 'Two-Spirit', 'Third Gender']
 SEX_ORIENTATION = ['Bisexual', 'Heterosexual', 'Homosexual']
@@ -10,7 +9,7 @@ SEX_ORIENTATION = ['Bisexual', 'Heterosexual', 'Homosexual']
 
 class LoginForm(FlaskForm):
 
-    email           = EmailField('Email:')
+    email           = StringField('Email:')
     submit          = SubmitField('Log In')
     password        = PasswordField('Password')
     remember        = BooleanField("Remember Me")
@@ -18,7 +17,7 @@ class LoginForm(FlaskForm):
 
 class SignupForm(FlaskForm):
 
-    email           = EmailField('Email:')
+    email           = StringField('Email:')
     username        = StringField('Username:')
     firstname       = StringField('Firstname:')
     lastname        = StringField('Lastname:')

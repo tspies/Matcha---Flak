@@ -24,7 +24,7 @@ def validate_lib_login_form(form):
                 flash(f"Welcome {user['username']}, you are logged in!", 'success')
             else:
                 flash('You have not yet verified your email, please verify to continue', 'danger')
-                return redirect(url_for('unverified', email=user['email']))
+                return redirect(url_for('login'))
             return redirect(url_for('home'))
         else:
             flash("Password Incorrect", 'danger')

@@ -1,7 +1,9 @@
-from flask_uploads import UploadNotAllowed
+import re
+
+from flask_uploads          import UploadNotAllowed
 
 from matcha                 import photos
-from flask import g, flash, session
+from flask                  import g, flash, session
 
 
 def query_db(query, args=(), one=False):
@@ -17,7 +19,7 @@ def validate_lib_handle_picture_upload(request):
             image = request.files['image']
             if image.filename != '':
                 try:
-                    image.filename = image.filename.replace(" ", "")
+                    image.filename = re.sub(r" ?\([^)]+\)", "", image.filename)
                     photos.save(image)
                     flash('File uploaded', 'success')
                     query_db("INSERT INTO images (username, file_name) VALUES (?,?)",  (session['username'], image.filename))
@@ -28,11 +30,12 @@ def validate_lib_handle_picture_upload(request):
                     flash('Invalid file upload format', 'danger')
                     return False
             else:
-                flash('Uploaded file has an invalid file name', 'success')
+                flash('Uploaded file has an invalid file name', 'danger')
         return False
 
 
 def validate_lib_update_profile_picture(filename):
+
     query_db("UPDATE users SET profile_pic=? WHERE username=?", (filename, session['username']))
     g.db.commit()
     flash("Profile Picture Updated, You can now like other users profiles!", 'success')
