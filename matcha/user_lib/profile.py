@@ -5,6 +5,7 @@ from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer
 
 from matcha import mail
+from .history import log_history_moment
 
 
 def query_db(query, args=(), one=False):
@@ -133,6 +134,8 @@ def user_lib_create_wink(username):
     query_db("INSERT INTO likes (user_liking, user_liked) VALUES (?,?)", (session['username'], username))
     g.db.commit()
     flash("You have winked at " + username, 'success')
+    log_history_moment('wink', username, session['username'] + ' winked at you')
+    log_history_moment('wink', session['username'], ' You winked at ' + username)
     query_db("UPDATE users SET likes=likes+1 WHERE username=?", (username,))
     g.db.commit()
     query_db("UPDATE users SET fame = ((likes + matches + 1) * 100) WHERE username=?", (username,))
@@ -151,6 +154,7 @@ def user_lib_unwink(username):
     query_db("UPDATE users SET likes=likes-1 WHERE username=?", (username,))
     g.db.commit()
     flash("You have un-winked " + username, 'success')
+
     match_check = query_db("SELECT * FROM matches WHERE (user_1=? AND user_2=?) OR (user_1=? AND user_2=?)",
               (session['username'], username, username, session['username']))
     if match_check:

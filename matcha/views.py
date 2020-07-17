@@ -251,6 +251,13 @@ def unwink(username):
     return user_lib_unwink(username)
 
 
+@app.route('/history')
+def history():
+    if 'logged_in' in session:
+        if session['logged_in']:
+            return render_template('history.html')
+
+
 @app.route('/notification', methods=['GET', 'POST'])
 def notifications():
     return render_template('notifications.html')

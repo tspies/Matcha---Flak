@@ -5,7 +5,7 @@ from flask                  import Flask, g
 from flask_mail             import Mail
 from flask_bcrypt           import Bcrypt
 from flask_socketio         import SocketIO
-from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
+from flask_uploads          import UploadSet, configure_uploads, IMAGES, patch_request_class
 
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_DEFAULT_SENDER = 'matchadatingxxx@gmail.com'

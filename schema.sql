@@ -67,3 +67,11 @@ create table images(
     username string not null,
     file_name string not null
 );
+
+drop table if exists history;
+create table history(
+  log_username string not null,
+  notif_username string not null,
+  message string not null,
+  history_type integer default(0)
+);
