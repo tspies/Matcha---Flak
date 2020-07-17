@@ -29,7 +29,7 @@ def validate_lib_email_verification(token):
 
 
 def update_verified(username):
-    query_db("UPDATE users SET verified=True WHERE username=?", (username,))
+    query_db("UPDATE users SET verified=? WHERE username=?", (True, username))
     g.db.commit()
 
 
@@ -83,7 +83,7 @@ def validate_lib_reset_password(form, token):
         if decoded_token == form.email.data:
 
             if not check_valid_email(form.email.data):
-                return render_template("reset_password.html", form=form, token=tokn)
+                return render_template("reset_password.html", form=form, token=token)
             if not valid_password(form.password.data):
                 flash(
                     "Password is Invlaid please use a password between 6 and 15 character with at least one number, special character, one uppler case letter and on lower case letter with no spaces",
