@@ -138,12 +138,15 @@ def user_lib_create_wink(username):
     query_db("UPDATE users SET fame = ((likes + matches + 1) * 100) WHERE username=?", (username,))
     g.db.commit()
     check_if_users_match(username)
+    query_db("UPDATE users SET fame = ((likes + matches + 1) * 100) WHERE username=?", (username,))
+    g.db.commit()
+    query_db("UPDATE users SET fame = ((likes + matches + 1) * 100) WHERE username=?", (session['username'],))
+    g.db.commit()
     return redirect(url_for('profile_view', username=username))
 
 
 def user_lib_unwink(username):
-    query_db("DELETE FROM likes WHERE (user_liking=? AND user_liked=?) OR (user_liking=? AND user_liked=?)",
-             (username, session['username'], session['username'], username))
+    query_db("DELETE FROM likes WHERE (user_liking=? AND user_liked=?)", (session['username'], username))
     g.db.commit()
     query_db("UPDATE users SET likes=likes-1 WHERE username=?", (username,))
     g.db.commit()
@@ -171,6 +174,11 @@ def user_lib_unwink(username):
         query_db("UPDATE users SET matches=matches-1 WHERE username=?", (username,))
         g.db.commit()
         flash("You have unmatched from " + username, 'success')
+
+    query_db("UPDATE users SET fame = ((likes + matches + 1) * 100) WHERE username=?", (username,))
+    g.db.commit()
+    query_db("UPDATE users SET fame = ((likes + matches + 1) * 100) WHERE username=?", (session['username'],))
+    g.db.commit()
     return redirect(url_for('profile_view', username=username))
 
 
