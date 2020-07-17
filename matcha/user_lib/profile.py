@@ -147,8 +147,6 @@ def user_lib_unwink(username):
     g.db.commit()
     query_db("UPDATE users SET likes=likes-1 WHERE username=?", (username,))
     g.db.commit()
-    query_db("UPDATE users SET likes=likes-1 WHERE username=?", (session['username'],))
-    g.db.commit()
     flash("You have un-winked " + username, 'success')
     match_check = query_db("SELECT * FROM matches WHERE (user_1=? AND user_2=?) OR (user_1=? AND user_2=?)",
               (session['username'], username, username, session['username']))
